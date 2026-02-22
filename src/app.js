@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const routes = require('./routes');
+const authRoutes = require('./routes/authRoute');
 
 const app = express();
 
@@ -11,6 +12,9 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routing dasar
 app.use('/api', routes);
+
+// Routing autentikasi
+app.use('/api/auth', authRoutes);
 
 // Handling route yang tidak ditemukan (404)
 app.use((req, res, next) => {
