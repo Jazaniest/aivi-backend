@@ -4,12 +4,12 @@ const users = [];
 
 const register = async (req, res) => {
     try {
-        const { username, password } = req.body;
+        const { name, password, email, negara_id, provinsi_id, kabupaten_id } = req.body;
 
-        // 1. Cek apakah username sudah ada di "database"
-        const userExists = users.find(u => u.username === username);
+        // 1. Cek apakah email sudah ada di "database"
+        const userExists = users.find(u => u.email === email);
         if (userExists) {
-            return res.status(400).json({ status: 'error', message: 'Username sudah digunakan!' });
+            return res.status(400).json({ status: 'error', message: 'Email sudah digunakan!' });
         }
 
         // 2. Enkripsi (Hash) password sebelum disimpan agar aman
@@ -19,7 +19,11 @@ const register = async (req, res) => {
         // 3. Simpan user baru ke dalam array
         const newUser = {
             id: users.length + 1,
-            username: username,
+            name: name,
+            email: email,
+            negara_id: negara_id,
+            provinsi_id: provinsi_id,
+            kabupaten_id: kabupaten_id,
             password: hashedPassword
         };
         users.push(newUser);
@@ -33,12 +37,12 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
     try {
-        const { username, password } = req.body;
+        const { email, password } = req.body;
 
         // 1. Cari user di "database"
-        const user = users.find(u => u.username === username);
+        const user = users.find(u => u.email === email);
         if (!user) {
-            return res.status(404).json({ status: 'error', message: 'User tidak ditemukan!' });
+            return res.status(404).json({ status: 'error', message: 'Email tidak ditemukan!' });
         }
 
         // 2. Cocokkan password yang diketik dengan password yang di-hash di "database"
@@ -50,7 +54,7 @@ const login = async (req, res) => {
         // 3. Jika cocok, buatkan Token JWT
         // Token ini berisi data id dan username, dikunci dengan JWT_SECRET, dan berlaku selama 1 hari
         const token = jwt.sign(
-            { id: user.id, username: user.username },
+            { id: user.id, email: user.email },
             process.env.JWT_SECRET,
             { expiresIn: '1d' }
         );
